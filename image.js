@@ -255,9 +255,13 @@ class CacheableImage extends Component {
             return this.renderDefaultSource();
         }
 
-        return (
-            <ActivityIndicator {...this.props.activityIndicatorProps} />
-        );
+        // return (
+        //     <ActivityIndicator {...this.props.activityIndicatorProps} />
+        // );
+
+        console.log('cacheable image no result');
+
+        return null;
     }
 
     renderCache() {
