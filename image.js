@@ -14,6 +14,7 @@ class CacheableImage extends Component {
         this.imageDownloadProgress = this.imageDownloadProgress.bind(this);
         this._handleConnectivityChange = this._handleConnectivityChange.bind(this);
         this._stopDownload = this._stopDownload.bind(this);
+        this.checkImageCache = this.checkImageCache.bind(this);
 
         this.state = {
             isRemote: false,
@@ -59,9 +60,10 @@ class CacheableImage extends Component {
     }
 
     async checkImageCache(imageUri, cachePath, cacheKey) {
+        const { bundleIdentifier } = this.props;
         const pathArr = DocumentDirectoryPath.split('/');
         pathArr.pop();
-        const dirPath = pathArr.join('/') + '/Library/Caches/com.wb.screener/fsCachedImages/';
+        const dirPath = pathArr.join('/') + '/Library/Caches/' + bundleIdentifier + '/fsCachedImages/';
         const filePath = dirPath+'/'+cacheKey;
 
         RNFS
@@ -300,7 +302,8 @@ CacheableImage.propTypes = {
     ]),
     checkNetwork: PropTypes.bool,
     networkAvailable: PropTypes.bool,
-    downloadInBackground: PropTypes.bool
+    downloadInBackground: PropTypes.bool,
+    bundleIdentifier: PropTypes.string.isRequired,
 };
 
 CacheableImage.defaultProps = {
