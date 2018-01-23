@@ -59,7 +59,9 @@ class CacheableImage extends Component {
     }
 
     async checkImageCache(imageUri, cachePath, cacheKey) {
-        const dirPath = DocumentDirectoryPath+'/'+cachePath;
+        const pathArr = DocumentDirectoryPath.split('/');
+        pathArr.pop();
+        const dirPath = pathArr.join('/') + '/Library/Caches/com.wb.screener/fsCachedImages/';
         const filePath = dirPath+'/'+cacheKey;
 
         RNFS
@@ -82,9 +84,9 @@ class CacheableImage extends Component {
             // means file does not exist
             // first make sure network is available..
             // if (! this.state.networkAvailable) {
-            if (! this.networkAvailable) {
-                return;
-            }
+            // if (! this.networkAvailable) {
+            //     return;
+            // }
 
             // then make sure directory exists.. then begin download
             // The NSURLIsExcludedFromBackupKey property can be provided to set this attribute on iOS platforms.
@@ -93,7 +95,6 @@ class CacheableImage extends Component {
             RNFS
             .mkdir(dirPath, {NSURLIsExcludedFromBackupKey: true})
             .then(() => {
-
                 // before we change the cachedImagePath.. if the previous cachedImagePath was set.. remove it
                 if (this.state.cacheable && this.state.cachedImagePath) {
                     let delImagePath = this.state.cachedImagePath;
@@ -219,7 +220,7 @@ class CacheableImage extends Component {
 
     componentWillMount() {
         if (this.props.checkNetwork) {
-            NetInfo.isConnected.addEventListener('change', this._handleConnectivityChange);
+            NetInfo.isConnected.addEventListener('connectionChange', this._handleConnectivityChange);
             // componentWillUnmount unsets this._handleConnectivityChange in case the component unmounts before this fetch resolves
             NetInfo.isConnected.fetch().done(this._handleConnectivityChange);
         }
@@ -229,7 +230,7 @@ class CacheableImage extends Component {
 
     componentWillUnmount() {
         if (this.props.checkNetwork) {
-            NetInfo.isConnected.removeEventListener('change', this._handleConnectivityChange);
+            NetInfo.isConnected.removeEventListener('connectionChange', this._handleConnectivityChange);
             this._handleConnectivityChange = null;
         }
 
@@ -255,11 +256,9 @@ class CacheableImage extends Component {
             return this.renderDefaultSource();
         }
 
-        // return (
-        //     <ActivityIndicator {...this.props.activityIndicatorProps} />
-        // );
-
-        console.log('cacheable image no result');
+        return (
+            <ActivityIndicator {...this.props.activityIndicatorProps} />
+        );
 
         return null;
     }
