@@ -12,7 +12,6 @@ class CacheableImage extends Component {
         super(props)
         this.imageDownloadBegin = this.imageDownloadBegin.bind(this);
         this.imageDownloadProgress = this.imageDownloadProgress.bind(this);
-        this._handleConnectivityChange = this._handleConnectivityChange.bind(this);
         this._stopDownload = this._stopDownload.bind(this);
         this.checkImageCache = this.checkImageCache.bind(this);
 
@@ -22,14 +21,12 @@ class CacheableImage extends Component {
             cacheable: true
         };
 
-        this.networkAvailable = props.networkAvailable;
         this.downloading = false;
         this.jobId = null;
     };
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.source != this.props.source || nextProps.networkAvailable != this.networkAvailable) {
-            this.networkAvailable = nextProps.networkAvailable;
+        if (nextProps.source != this.props.source) {
             this._processSource(nextProps.source);
         }
     }
@@ -84,11 +81,6 @@ class CacheableImage extends Component {
         .catch((err) => {
 
             // means file does not exist
-            // first make sure network is available..
-            // if (! this.state.networkAvailable) {
-            // if (! this.networkAvailable) {
-            //     return;
-            // }
 
             // then make sure directory exists.. then begin download
             // The NSURLIsExcludedFromBackupKey property can be provided to set this attribute on iOS platforms.
@@ -221,29 +213,14 @@ class CacheableImage extends Component {
     }
 
     componentWillMount() {
-        if (this.props.checkNetwork) {
-            NetInfo.isConnected.addEventListener('connectionChange', this._handleConnectivityChange);
-            // componentWillUnmount unsets this._handleConnectivityChange in case the component unmounts before this fetch resolves
-            NetInfo.isConnected.fetch().done(this._handleConnectivityChange);
-        }
-
         this._processSource(this.props.source, true);
     }
 
     componentWillUnmount() {
-        if (this.props.checkNetwork) {
-            NetInfo.isConnected.removeEventListener('connectionChange', this._handleConnectivityChange);
-            this._handleConnectivityChange = null;
-        }
-
         if (this.downloading && this.jobId) {
             this._stopDownload();
         }
     }
-
-    async _handleConnectivityChange(isConnected) {
-        this.networkAvailable = isConnected;
-    };
 
     render() {
         if (!this.state.isRemote && !this.props.defaultSource) {
@@ -266,7 +243,7 @@ class CacheableImage extends Component {
     }
 
     renderCache() {
-        const { children, defaultSource, checkNetwork, networkAvailable, downloadInBackground, activityIndicatorProps, ...props } = this.props;
+        const { children, defaultSource, downloadInBackground, activityIndicatorProps, ...props } = this.props;
         return (
             <ResponsiveImage {...props} source={{uri: 'file://'+this.state.cachedImagePath}}>
             {children}
@@ -275,7 +252,7 @@ class CacheableImage extends Component {
     }
 
     renderLocal() {
-        const { children, defaultSource, checkNetwork, networkAvailable, downloadInBackground, activityIndicatorProps, ...props } = this.props;
+        const { children, defaultSource, downloadInBackground, activityIndicatorProps, ...props } = this.props;
         return (
             <ResponsiveImage {...props}>
             {children}
@@ -284,9 +261,9 @@ class CacheableImage extends Component {
     }
 
     renderDefaultSource() {
-        const { children, defaultSource, checkNetwork, networkAvailable, ...props } = this.props;
+        const { children, defaultSource, ...props } = this.props;
         return (
-            <CacheableImage {...props} source={defaultSource} checkNetwork={false} networkAvailable={this.networkAvailable} >
+            <CacheableImage {...props} source={defaultSource} >
             {children}
             </CacheableImage>
         );
