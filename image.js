@@ -63,8 +63,8 @@ class CacheableImage extends Component {
         const { bundleIdentifier } = this.props;
         const pathArr = DocumentDirectoryPath.split('/');
         pathArr.pop();
-        const dirPath = pathArr.join('/') + '/Library/Caches/' + bundleIdentifier + '/fsCachedImages/';
-        const filePath = dirPath+'/'+cacheKey;
+        const dirPath = pathArr.join('/') + '/Library/Caches/' + bundleIdentifier + '/' + cachePath;
+        const filePath = dirPath + '/' + cacheKey;
 
         RNFS
         .stat(filePath)
