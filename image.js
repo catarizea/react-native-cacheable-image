@@ -27,19 +27,10 @@ class CacheableImage extends Component {
             downloading: false,
             jobId: null
         };
-
-        // this.downloading = false;
-        // this.jobId = null;
     };
 
-    // componentWillReceiveProps(nextProps) {
-    //     if (nextProps.source != this.props.source) {
-    //         this._processSource(nextProps.source);
-    //     }
-    // }
-
     shouldComponentUpdate(nextProps, nextState) {
-        if (nextState === this.state) {
+        if (nextState === this.state && nextProps === this.props) {
             return false;
         }
         return true;
