@@ -42,16 +42,12 @@ class CacheableImage extends Component {
             case 403:
                 break;
             default:
-                // this.downloading = true;
-                // this.jobId = info.jobId;
                 this.setState({ downloading: true, jobId: info.jobId });
         }
     }
 
     async imageDownloadProgress(info) {
         if ((info.contentLength / info.bytesWritten) == 1) {
-            // this.downloading = false;
-            // this.jobId = null;
             this.setState({ downloading: false, jobId: null });
         }
     }
@@ -112,15 +108,10 @@ class CacheableImage extends Component {
                 let download = RNFS
                 .downloadFile(downloadOptions);
 
-                // this.downloading = true;
-                // this.jobId = download.jobId;
-
                 this.setState({ downloading: true, jobId: download.jobId });
 
                 download.promise
                 .then((res) => {
-                    // this.downloading = false;
-                    // this.jobId = null;
                     this.setState({ downloading: false, jobId: null });
 
                     switch (res.statusCode) {
@@ -138,8 +129,6 @@ class CacheableImage extends Component {
 
                     // If there was no in-progress job, it may have been cancelled already (and this component may be unmounted)
                     if (this.state.downloading) {
-                        // this.downloading = false;
-                        // this.jobId = null;
                         this.setState({cacheable: false, cachedImagePath: null, downloading: false, jobId: null});
                     }
                 });
@@ -209,9 +198,7 @@ class CacheableImage extends Component {
     _stopDownload() {
         if (!this.state.jobId) return;
 
-        // this.downloading = false;
         RNFS.stopDownload(this.state.jobId);
-        // this.jobId = null;
         this.setState({downloading: false, jobId: null});
     }
 
